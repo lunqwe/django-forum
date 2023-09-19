@@ -8,8 +8,21 @@ from .models import Post
 @login_required(login_url='/login')
 def homepage(request):
     posts = Post.objects.all()
+    sort_order = request.GET.get('sort', 'default')
     
-    return render(request, 'main/home.html', {"posts" : posts})
+    if request.method == "POST":
+        post_id = request.POST.get("post-id")
+        print(post_id)
+    # sort_order = request.GET.get('sort', 'default')        
+    # if sort_order == 'author':
+    #     posts = posts.order_by('author').reverse()
+    # elif sort_order == 'created_at':
+    #     posts = posts.order_by('created_at').reverse()
+    # elif sort_order == 'title':
+    #     posts = posts.order_by('title') !!! 'sort_order': sort_order
+    
+    return render(request, 'main/home.html', {'posts' : posts})
+    
 
 def sign_up(request):
     if request.method == 'POST':
@@ -36,5 +49,12 @@ def create_post(request):
     
     return render(request, 'main/create_post.html' , {"form" : form})
 
-
-    
+def delete_post(request):
+    if request.method == "POST":
+        post_id = request.POST.get('post_id')
+        post = Post.objects.get(id=post_id)
+        
+        if post and request.user == post.author:
+            post.delete()
+            return redirect('homepage')
+                

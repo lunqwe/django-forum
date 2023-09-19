@@ -1,5 +1,11 @@
 {% extends "main/base.html" %}
 {% block content %}
+<h5 style: "margin-left: 20px" style="color:black">Sort by</h5>
+<form method="GET" action="{% url 'homepage' %}">
+<button type="submit" name="sort" value="author"><span>Author</span></button>
+<button type="submit" name="sort" value="created_at"><span>Date</span></button>
+<button type="submit" name="sort" value="title"><span>Title</span></button>
+</form>
 {% for post in posts %}
 <div class="card mt-3">
     <div class ='card-header'><strong>@{{ post.author }}</strong></div>
@@ -9,7 +15,13 @@
             <p>{{ post.text }}</p>
         </div>
         <div>
-            buttons
+            {% if post.author == user %}
+                <form method="post" action="{% url 'delete_post' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <button class='btn btn-danger'type="submit" name="delete_post">Delete</button>
+                </form>
+            {% endif %}
         </div>
     </div>
     <div class="card-footer text-muted">{{ post.created_at }}</div>
